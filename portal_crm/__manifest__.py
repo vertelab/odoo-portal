@@ -33,13 +33,9 @@
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
     'depends': ['crm'],
-    'data': [
-        'security/crm_security.xml',
-        'security/ir.model.access.csv',
-        'views/portal_crm_view.xml',
-        
-    ],
+    'data': ['portal_crm_view.xml'],
     'application': False,
     'installable': True,
 }
-# vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:
+
+#install: crm, portal_crm

@@ -1,61 +1,18 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Odoo, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2020 Vertel AB (<http://vertel.se>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+from odoo import api, fields, models, _
 
-# -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-import contextlib
-
-import pytz
-import datetime
-import ipaddress
-import itertools
 import logging
-import hmac
-
-from collections import defaultdict
-from hashlib import sha256
-from itertools import chain, repeat
-from lxml import etree
-from lxml.builder import E
-import passlib.context
-
-from odoo import api, fields, models, tools, SUPERUSER_ID, _
-from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
-from odoo.http import request
-from odoo.osv import expression
-from odoo.service.db import check_super
-from odoo.tools import partition, pycompat, collections
-
 _logger = logging.getLogger(__name__)
-
-
 
 class UsersImplied(models.Model):
     _inherit = 'res.users'
-
+    
+    #group_portal_crm = fields.Char("bazonk_foobar")
+    
+    # this function is never called!! (=> group_portal_crm not initiated)
     @api.model_create_multi
     def create(self, vals_list):
         for values in vals_list:
             if 'groups_id' in values:
-                # complete 'groups_id' with implied groups
                 user = self.new(values)
                 group_portal_crm = self.env.ref('base.group_portal_crm', raise_if_not_found=False)
                 if group_portal_crm and group_portal_crm in user.groups_id:
@@ -65,14 +22,8 @@ class UsersImplied(models.Model):
                 values['groups_id'] = type(self).groups_id.convert_to_write(gs, user.groups_id)
         return super(UsersImplied, self).create(vals_list)
 
-    
-
-
-
 class Website(models.Model):
-
-    _name = "website"
-    _description = "Website"
+    _inherit = "website"
     
     @api.model
     def create(self, vals):
