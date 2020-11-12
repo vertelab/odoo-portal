@@ -5,24 +5,14 @@ _logger = logging.getLogger(__name__)
 
 class UsersImplied(models.Model):
     _inherit = 'res.users'
+
+    group_portal_crm = fields.Selection(selection=[(4, "Portal CRM 2")])
     
-    #group_portal_crm = fields.Char("bazonk_foobar")
-    
-    # this function is never called!! (=> group_portal_crm not initiated)
-    @api.model_create_multi
-    def create(self, vals_list):
-        for values in vals_list:
-            if 'groups_id' in values:
-                user = self.new(values)
-                group_portal_crm = self.env.ref('base.group_portal_crm', raise_if_not_found=False)
-                if group_portal_crm and group_portal_crm in user.groups_id:
-                    gs = self.env.ref('base.group_portal_crm') | self.env.ref('base.group_portal_crm').trans_implied_ids
-                else:
-                    gs = user.groups_id | user.groups_id.mapped('trans_implied_ids')
-                values['groups_id'] = type(self).groups_id.convert_to_write(gs, user.groups_id)
-        return super(UsersImplied, self).create(vals_list)
+    def init(self):
+        self.sel_groups_1_9_10 = fields.Selection(add_selection=[(4, "Portal CRM 1")])
 
 class Website(models.Model):
+    _name = "website"
     _inherit = "website"
     
     @api.model
